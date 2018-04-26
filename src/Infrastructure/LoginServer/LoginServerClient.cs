@@ -14,15 +14,16 @@ namespace SwgAnh.Docker.Infrastructure
      *     UDP Packet server for handling Login attemps.
      *     TODO: Should htis be its own server? Could be
      */
+    // ReSharper disable once ClassNeverInstantiated.Global
     public class LoginServerClient : ILoginServer
     {
+        private volatile bool IsRunning;
         private readonly UdpClient Client = new UdpClient(LoginServerPort);
         private IPEndPoint  Server = new IPEndPoint(IPAddress.Any, LoginServerPort);
         private const int LoginServerPort = 2000;
-        private const int PacketTimeOut = 300000;
-        private const int MaxPacketSize = 496;
-        private const int MaxPacketSizeBeforeCompression = 149;
-        private volatile bool IsRunning = false;
+//        private const int PacketTimeOut = 300000;
+//        private const int MaxPacketSize = 496;
+//        private const int MaxPacketSizeBeforeCompression = 149;
         
         /**
          * Start the UDP Server listener
@@ -46,7 +47,8 @@ namespace SwgAnh.Docker.Infrastructure
         {
             while (IsRunning)
             {
-                Client.Receive(ref Server);
+                var bytes = Client.Receive(ref Server);
+                // TODO Send Event or something with the bytes?    
             }
         }
 
@@ -59,14 +61,5 @@ namespace SwgAnh.Docker.Infrastructure
             Client.Close();
         }
 
-
-        /**
-         * Recive packets bytes
-         */
-        private void RecivePackets(IAsyncResult asyncResult)
-        {
-            var recivedBytes = Client.EndReceive(asyncResult, ref Server);
-            // Send Event or something with bytes?
-        }
     }
 }
