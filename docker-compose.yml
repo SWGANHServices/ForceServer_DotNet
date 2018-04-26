@@ -1,0 +1,8 @@
+version: '2.1'
+
+services:
+  swganh.docker:
+    image: swganh.docker
+    build: .
+    ports:
+      - 3000:3000
