@@ -2,6 +2,7 @@ using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Runtime.InteropServices.ComTypes;
+using System.Threading;
 using SwgAnh.Docker.Contracts;
 
 namespace SwgAnh.Docker.Infrastructure
@@ -21,7 +22,7 @@ namespace SwgAnh.Docker.Infrastructure
         private const int PacketTimeOut = 300000;
         private const int MaxPacketSize = 496;
         private const int MaxPacketSizeBeforeCompression = 149;
-
+        private volatile bool IsRunning = false;
         
         /**
          * Start the UDP Server listener
@@ -30,11 +31,22 @@ namespace SwgAnh.Docker.Infrastructure
         {
             try
             {
-                Client.BeginReceive(RecivePackets, null);
+                IsRunning = true;
+                if (!IsRunning) return;
+                var listeningThread = new Thread(ListenForUdpPackets);
+                listeningThread.Start();
             }
             catch (SocketException e)
             {
                 Console.WriteLine($"Error reciving UDP packets: {e}");
+            }
+        }
+
+        private void ListenForUdpPackets()
+        {
+            while (IsRunning)
+            {
+                Client.Receive(ref Server);
             }
         }
 
@@ -43,6 +55,7 @@ namespace SwgAnh.Docker.Infrastructure
          */
         public void CloseServer()
         {
+            IsRunning = false;
             Client.Close();
         }
 
@@ -53,6 +66,7 @@ namespace SwgAnh.Docker.Infrastructure
         private void RecivePackets(IAsyncResult asyncResult)
         {
             var recivedBytes = Client.EndReceive(asyncResult, ref Server);
+            // Send Event or something with bytes?
         }
     }
 }

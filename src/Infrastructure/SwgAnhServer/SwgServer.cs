@@ -14,6 +14,7 @@ namespace SwgAnh.Docker.Infrastructure.SwgAnhServer
         public void Run()
         {
             Console.WriteLine("Starting up SWG Server...");
+            
             _loginServer.StartServer();
         }
     }
