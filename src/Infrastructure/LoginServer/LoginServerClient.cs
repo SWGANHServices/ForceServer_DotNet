@@ -16,13 +16,17 @@ namespace SwgAnh.Docker.Infrastructure
     // ReSharper disable once ClassNeverInstantiated.Global
     public class LoginServerClient : ILoginServer
     {
-        private volatile bool IsRunning;
         private readonly UdpClient Client = new UdpClient(LoginServerPort);
         private IPEndPoint  Server = new IPEndPoint(IPAddress.Any, LoginServerPort);
+        private volatile bool IsRunning;
+        private readonly ILogger _logger;
         private const int LoginServerPort = 2000;
-//        private const int PacketTimeOut = 300000;
-//        private const int MaxPacketSize = 496;
-//        private const int MaxPacketSizeBeforeCompression = 149;
+
+        
+        public LoginServerClient(ILogger logger)
+        {
+            _logger = logger;
+        }
         
         /**
          * Start the UDP Server listener
@@ -38,7 +42,7 @@ namespace SwgAnh.Docker.Infrastructure
             }
             catch (SocketException e)
             {
-                Console.WriteLine($"Error reciving UDP packets: {e}");
+                _logger.LogError($"Starting login server failed with error: {e}");
             }
         }
 
@@ -47,7 +51,7 @@ namespace SwgAnh.Docker.Infrastructure
             while (IsRunning)
             {
                 var bytes = Client.Receive(ref Server);
-                // TODO Send Event or something with the bytes?    
+                // TODO Send Event or something with the bytes?
             }
         }
 
