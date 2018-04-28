@@ -4,6 +4,7 @@ using System.Net.Sockets;
 using System.Runtime.InteropServices.ComTypes;
 using System.Threading;
 using SwgAnh.Docker.Contracts;
+using SwgAnh.Docker.src.Infrastructure.LoginServer;
 
 namespace SwgAnh.Docker.Infrastructure
 {
@@ -16,16 +17,18 @@ namespace SwgAnh.Docker.Infrastructure
     // ReSharper disable once ClassNeverInstantiated.Global
     public class LoginServerClient : ILoginServer
     {
+        public delegate void ThresholdReachedEventHandler(object sender, BytesRecivedEventArgs e);
         private readonly UdpClient Client = new UdpClient(LoginServerPort);
         private IPEndPoint  Server = new IPEndPoint(IPAddress.Any, LoginServerPort);
+        private LoginEventHandler eventHandler = new LoginEventHandler();
         private volatile bool IsRunning;
         private readonly ILogger _logger;
         private const int LoginServerPort = 2000;
-
         
         public LoginServerClient(ILogger logger)
         {
             _logger = logger;
+            eventHandler.UdpPacketsRecived += TryLogin;
         }
         
         /**
@@ -39,6 +42,7 @@ namespace SwgAnh.Docker.Infrastructure
                 if (!IsRunning) return;
                 var listeningThread = new Thread(ListenForUdpPackets);
                 listeningThread.Start();
+                _logger.LogDebug("Listening for login attemps...");
             }
             catch (SocketException e)
             {
@@ -51,8 +55,17 @@ namespace SwgAnh.Docker.Infrastructure
             while (IsRunning)
             {
                 var bytes = Client.Receive(ref Server);
-                // TODO Send Event or something with the bytes?
+                eventHandler.Login(bytes);
             }
+        }
+
+        /**
+         *  This is where we will try to login to the client.!--
+         *  Validation against database etc.
+         */
+        protected virtual void TryLogin(object sender, BytesRecivedEventArgs e)
+        {
+            
         }
 
         /**
@@ -61,6 +74,7 @@ namespace SwgAnh.Docker.Infrastructure
         public void CloseServer()
         {
             IsRunning = false;
+            eventHandler.UdpPacketsRecived -= TryLogin;
             Client.Close();
         }
 

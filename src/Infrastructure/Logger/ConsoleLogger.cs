@@ -12,7 +12,9 @@ namespace SwgAnh.Docker.Infrastructure.Logger
 
         public void LogDebug(string message)
         {
+            SetColor(ConsoleColor.Green);
             Console.WriteLine($"{Debug} {message}");
+            ResetColor();
         }
 
         public void Log(string message)
