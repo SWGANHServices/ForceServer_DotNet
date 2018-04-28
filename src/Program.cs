@@ -21,7 +21,7 @@ namespace SwgAnh.Docker
         private static ServiceProvider ConfigureDependencyInjection()
         {
             var serviceProvider = new ServiceCollection()
-                .AddSingleton<ILoginServer, LoginServerClient>()
+                .AddTransient<ILoginServer, LoginServerClient>()
                 .AddTransient<ISwgServer, SwgServer>()
                 .AddSingleton<ILogger, ConsoleLogger>()
                 .BuildServiceProvider();
