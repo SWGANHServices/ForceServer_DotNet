@@ -1,7 +1,6 @@
-using System;
 using static SwgAnh.Docker.Infrastructure.LoginServerClient;
 
-namespace SwgAnh.Docker.src.Infrastructure.LoginServer
+namespace SwgAnh.Docker.Infrastructure.LoginServer
 {
     public class LoginEventHandler
     {
@@ -23,10 +22,5 @@ namespace SwgAnh.Docker.src.Infrastructure.LoginServer
                 handler(this, e);
             }
         }
-    }
-
-    public class BytesRecivedEventArgs : EventArgs 
-    {
-        public byte[] RecivedBytes { get; set; }
     }
 }
