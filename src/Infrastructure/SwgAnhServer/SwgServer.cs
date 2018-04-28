@@ -6,16 +6,18 @@ namespace SwgAnh.Docker.Infrastructure.SwgAnhServer
     public class SwgServer : ISwgServer
     {
         private readonly ILoginServer _loginServer;
+        private readonly ILogger _logger;
 
-        public SwgServer(ILoginServer loginServer)
+        public SwgServer(ILoginServer loginServer, ILogger logger)
         {
             _loginServer = loginServer;
+            _logger = logger;
         }
         public void Run()
         {
-            Console.WriteLine("Starting up SWG Server...");
-            
+            _logger.Log("Starting Server...");
             _loginServer.StartServer();
+            _logger.Log("Starting Server... DONE");
         }
     }
 }

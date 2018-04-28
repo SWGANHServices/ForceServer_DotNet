@@ -8,11 +8,10 @@ using SwgAnh.Docker.Contracts;
 namespace SwgAnh.Docker.Infrastructure
 {
     /**
-     *    LoginServerClient.cs
-     * --------------------------
+     *     LoginServerClient.cs
+     * 
      *     Handles the login packets from the SWG client.
      *     UDP Packet server for handling Login attemps.
-     *     TODO: Should htis be its own server? Could be
      */
     // ReSharper disable once ClassNeverInstantiated.Global
     public class LoginServerClient : ILoginServer
