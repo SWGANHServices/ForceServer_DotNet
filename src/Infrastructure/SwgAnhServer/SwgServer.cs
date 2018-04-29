@@ -13,6 +13,10 @@ namespace SwgAnh.Docker.Infrastructure.SwgAnhServer
             _loginServer = loginServer;
             _logger = logger;
         }
+
+        /// <summary>
+        /// Begin All server components
+        /// </summary>
         public void Run()
         {
             _logger.Log("Starting Server...");

@@ -8,15 +8,17 @@ namespace SwgAnh.Docker
 {
     static class Program
     {
-        /**
-         *    Main startup for SWGANH server
-         */
+        /// <summary>
+        /// Setartup for the server
+        /// </summary>
+        /// <param name="args">Not in use</param>
         private static void Main(string[] args)
         {
             var serviceCollection = ConfigureDependencyInjection();
             var swgServer = serviceCollection.GetService<ISwgServer>();
             swgServer.Run();
         }
+
 
         private static ServiceProvider ConfigureDependencyInjection()
         {

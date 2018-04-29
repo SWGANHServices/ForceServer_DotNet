@@ -5,6 +5,8 @@ using System.Runtime.InteropServices.ComTypes;
 using System.Threading;
 using SwgAnh.Docker.Contracts;
 using SwgAnh.Docker.Infrastructure.LoginServer;
+using SwgAnh.Docker.Infrastructure.Serialization;
+using SwgAnh.Docker.Models;
 
 namespace SwgAnh.Docker.Infrastructure
 {
@@ -23,7 +25,7 @@ namespace SwgAnh.Docker.Infrastructure
         private LoginEventHandler eventHandler = new LoginEventHandler();
         private volatile bool IsRunning;
         private readonly ILogger _logger;
-        private const int LoginServerPort = 2000;
+        private const int LoginServerPort = 44453;
         
         public LoginServerClient(ILogger logger)
         {
@@ -31,9 +33,9 @@ namespace SwgAnh.Docker.Infrastructure
             eventHandler.UdpPacketsRecived += TryLogin;
         }
         
-        /**
-         * Start the UDP Server listener
-         */
+        /// <summary>
+        /// Start Login Server for inncomming UDP packets
+        /// </summary>
         public void StartServer()
         {
             try
@@ -44,9 +46,17 @@ namespace SwgAnh.Docker.Infrastructure
                 listeningThread.Start();
                 _logger.LogDebug("Listening for login attemps...");
             }
-            catch (SocketException e)
+            catch(ThreadStateException e)
             {
-                _logger.LogError($"Starting login server failed with error: {e}");
+                _logger.LogError($"Thread failed with error: {e}");
+            }
+            catch(OutOfMemoryException e)
+            {
+                _logger.LogError($"Server is out of memory. can't start thread with error: {e}");
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Starting login server failed with unkown error: {e}");
             }
         }
 
@@ -55,6 +65,11 @@ namespace SwgAnh.Docker.Infrastructure
             while (IsRunning)
             {
                 var bytes = Client.Receive(ref Server);
+#if DEBUG
+                for (var i = 0; i <= bytes.Length - 1; i++) {
+                    _logger.LogDebug($"Packets recived: {bytes[i]}");
+                }
+#endif
                 eventHandler.Login(bytes);
             }
         }
@@ -65,12 +80,12 @@ namespace SwgAnh.Docker.Infrastructure
          */
         protected virtual void TryLogin(object sender, BytesRecivedEventArgs e)
         {
-            
+            var clientLogin = SwgSerialization.Deserialize<ClientLogin>(e.RecivedBytes);
         }
 
-        /**
-         * Stop the UDP Server Listener
-         */
+        /// <summary>
+        /// Stops the server and threads for Login
+        /// </summary>
         public void CloseServer()
         {
             IsRunning = false;
