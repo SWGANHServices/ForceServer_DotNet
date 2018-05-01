@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Runtime.InteropServices.ComTypes;
@@ -7,6 +8,7 @@ using SwgAnh.Docker.Contracts;
 using SwgAnh.Docker.Infrastructure.LoginServer;
 using SwgAnh.Docker.Infrastructure.Packets;
 using SwgAnh.Docker.Infrastructure.Serialization;
+using SwgAnh.Docker.Infrastructure.SwgStream;
 using SwgAnh.Docker.Models;
 
 namespace SwgAnh.Docker.Infrastructure
@@ -25,13 +27,15 @@ namespace SwgAnh.Docker.Infrastructure
         private IPEndPoint  Server = new IPEndPoint(IPAddress.Any, LoginServerPort);
         private LoginEventHandler eventHandler = new LoginEventHandler();
         private volatile bool IsRunning;
+        private readonly ISessionRecivedHandler _sessionRecivedHandler;
         private readonly ILogger _logger;
         private const int LoginServerPort = 44453;
         
-        public LoginServerClient(ILogger logger)
+        public LoginServerClient(ISessionRecivedHandler sessionRecivedHandler, ILogger logger)
         {
+            _sessionRecivedHandler = sessionRecivedHandler;
             _logger = logger;
-            eventHandler.UdpPacketsRecived += TryLogin;
+            eventHandler.UdpPacketsRecived += TryHandleInncommingPacket;
         }
         
         /// <inheritdoc />
@@ -75,20 +79,26 @@ namespace SwgAnh.Docker.Infrastructure
          *  This is where we will try to login to the client.!--
          *  Validation against database etc.
          */
-        protected virtual void TryLogin(object sender, BytesRecivedEventArgs e)
+        protected virtual void TryHandleInncommingPacket(object sender, BytesRecivedEventArgs e)
         {
-            var clientLogin = e.RecivedBytes.GetSOEPacket();
-            switch (clientLogin.OpCode)
-            {
-                case (short)SoeOpCodes.Ping:
-                    _logger.LogDebug($"Ping recived.");
-                    break;
-                case (short) SoeOpCodes.SoeSessionRequest:
-                    _logger.LogDebug($"{nameof(SoeOpCodes.SoeSessionRequest)} recived");
-                    break;
-                default:
-                    _logger.LogDebug("Uknown OPCode recived");
-                    break;
+            if (e.RecivedBytes == null) {
+                return;
+            }
+            using (var memStream = new MemoryStream(e.RecivedBytes)) {
+                var swgStream = new SwgInputStream(memStream);
+                switch (swgStream.OpCode)
+                {
+                    case (short)SoeOpCodes.Ping:
+                        _logger.LogDebug("Ping recived.");
+                        break;
+                    case (short) SoeOpCodes.SoeSessionRequest:
+                        _logger.LogDebug($"{nameof(SoeOpCodes.SoeSessionRequest)} recived");
+                        _sessionRecivedHandler.HandleSessionRecived(swgStream);
+                        break;
+                    default:
+                        _logger.LogDebug("Uknown OPCode recived");
+                        break;
+                }
             }
         }
 
@@ -98,7 +108,7 @@ namespace SwgAnh.Docker.Infrastructure
         public void CloseServer()
         {
             IsRunning = false;
-            eventHandler.UdpPacketsRecived -= TryLogin;
+            eventHandler.UdpPacketsRecived -= TryHandleInncommingPacket;
             Client.Close();
         }
 

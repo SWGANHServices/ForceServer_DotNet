@@ -21,6 +21,9 @@ namespace SwgAnh.Docker.Infrastructure.Serialization {
             }
             using (var memStream = new MemoryStream(byteArray)) {
                 var swgStream = new SwgInputStream(memStream);
+                
+                
+                
                 return swgStream;
             }
         }

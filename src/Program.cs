@@ -2,6 +2,7 @@
 using SwgAnh.Docker.Contracts;
 using SwgAnh.Docker.Infrastructure;
 using SwgAnh.Docker.Infrastructure.Logger;
+using SwgAnh.Docker.Infrastructure.LoginServer;
 using SwgAnh.Docker.Infrastructure.SwgAnhServer;
 
 namespace SwgAnh.Docker
@@ -26,6 +27,7 @@ namespace SwgAnh.Docker
                 .AddTransient<ILoginServer, LoginServerClient>()
                 .AddTransient<ISwgServer, SwgServer>()
                 .AddSingleton<ILogger, ConsoleLogger>()
+                .AddTransient<ISessionRecivedHandler, SessionRecivedHandler>()
                 .BuildServiceProvider();
             return serviceProvider;
         }
