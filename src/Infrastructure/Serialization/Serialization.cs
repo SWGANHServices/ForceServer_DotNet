@@ -15,17 +15,13 @@ namespace SwgAnh.Docker.Infrastructure.Serialization {
             }
         }
 
-        public static T Deserialize<T> (this byte[] byteArray) where T : class {
+        public static SwgInputStream GetSOEPacket (this byte[] byteArray){
             if (byteArray == null) {
                 return null;
             }
             using (var memStream = new MemoryStream(byteArray)) {
                 var swgStream = new SwgInputStream(memStream);
-                
-                // memStream.Write (byteArray, 0, byteArray.Length);
-                // memStream.Seek (0, SeekOrigin.Begin);
-                // var obj = (T) binForm.Deserialize (memStream);
-                return null;
+                return swgStream;
             }
         }
     }

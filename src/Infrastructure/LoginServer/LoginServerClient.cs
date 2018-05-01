@@ -5,6 +5,7 @@ using System.Runtime.InteropServices.ComTypes;
 using System.Threading;
 using SwgAnh.Docker.Contracts;
 using SwgAnh.Docker.Infrastructure.LoginServer;
+using SwgAnh.Docker.Infrastructure.Packets;
 using SwgAnh.Docker.Infrastructure.Serialization;
 using SwgAnh.Docker.Models;
 
@@ -33,6 +34,7 @@ namespace SwgAnh.Docker.Infrastructure
             eventHandler.UdpPacketsRecived += TryLogin;
         }
         
+        /// <inheritdoc />
         /// <summary>
         /// Start Login Server for inncomming UDP packets
         /// </summary>
@@ -65,11 +67,6 @@ namespace SwgAnh.Docker.Infrastructure
             while (IsRunning)
             {
                 var bytes = Client.Receive(ref Server);
-#if DEBUG
-                for (var i = 0; i <= bytes.Length - 1; i++) {
-                    _logger.LogDebug($"Packets recived: {bytes[i]}");
-                }
-#endif
                 eventHandler.Login(bytes);
             }
         }
@@ -80,7 +77,19 @@ namespace SwgAnh.Docker.Infrastructure
          */
         protected virtual void TryLogin(object sender, BytesRecivedEventArgs e)
         {
-            var clientLogin = SwgSerialization.Deserialize<ClientLogin>(e.RecivedBytes);
+            var clientLogin = e.RecivedBytes.GetSOEPacket();
+            switch (clientLogin.OpCode)
+            {
+                case (short)SoeOpCodes.Ping:
+                    _logger.LogDebug($"Ping recived.");
+                    break;
+                case (short) SoeOpCodes.SoeSessionRequest:
+                    _logger.LogDebug($"{nameof(SoeOpCodes.SoeSessionRequest)} recived");
+                    break;
+                default:
+                    _logger.LogDebug("Uknown OPCode recived");
+                    break;
+            }
         }
 
         /// <summary>
