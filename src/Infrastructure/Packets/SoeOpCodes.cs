@@ -1,9 +1,9 @@
 ﻿namespace SwgAnh.Docker.Infrastructure.Packets
 {
-
     public enum SoeOpCodes : short
     {
         SoeSessionRequest = 0x0100,
+        SoeSessionResponse = 0x0200,
         Ping = 0x0600,
         SoeDataFragB = 0x0E00,
         SoeDataFragC = 0x0F00,
@@ -20,6 +20,11 @@
         SoeChlDataC = 0x0B00,
         SoeChlDataD = 0x0C00,
         SoeDataFragA = 0x0D00,
-        SoeChlDataA = 0x0900
+        SoeChlDataA = 0x0900,
+        
+        // WORLD
+        WORLD_UPDATE = 0x0002,
+
+
     }
 }

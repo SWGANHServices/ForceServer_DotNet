@@ -1,3 +1,4 @@
+using static SwgAnh.Docker.Infrastructure.LoginServer.LoginEventHandler;
 using static SwgAnh.Docker.Infrastructure.LoginServerClient;
 
 namespace SwgAnh.Docker.Infrastructure.LoginServer

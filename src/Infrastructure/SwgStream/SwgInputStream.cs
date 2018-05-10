@@ -6,7 +6,6 @@ using SwgAnh.Docker.Infrastructure.Packets;
 
 namespace SwgAnh.Docker.Infrastructure.SwgStream {
     public class SwgInputStream : BinaryReader {
-        private byte[] inncommingData;
         private readonly Stream _stream;
         
         public short OpCode { get; }
@@ -15,7 +14,7 @@ namespace SwgAnh.Docker.Infrastructure.SwgStream {
         
         public SwgInputStream (Stream stream) : base (stream) {
             _stream = stream;
-            inncommingData = new byte[stream.Length];
+            var inncommingData = new byte[stream.Length];
             _stream.Read (inncommingData, 0, inncommingData.Length);
             _stream.Seek (0, SeekOrigin.Begin);
             OpCode = ReadInt16();
@@ -42,7 +41,7 @@ namespace SwgAnh.Docker.Infrastructure.SwgStream {
             return (short) ((i<<8) + (i>> 8));
         }
 
-        public override short ReadInt16()
+        public sealed override short ReadInt16()
         {
             var ch1 = _stream.ReadByte();
             var ch2 = _stream.ReadByte();
