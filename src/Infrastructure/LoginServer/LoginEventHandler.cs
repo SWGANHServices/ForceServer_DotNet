@@ -18,10 +18,7 @@ namespace SwgAnh.Docker.Infrastructure.LoginServer
 
 
         protected virtual void OnUdpPacketsRecived(BytesRecivedEventArgs e) {
-            ThresholdReachedEventHandler handler = UdpPacketsRecived;
-            if (handler != null) {
-                handler(this, e);
-            }
+            UdpPacketsRecived?.Invoke(this, e);
         }
     }
 }

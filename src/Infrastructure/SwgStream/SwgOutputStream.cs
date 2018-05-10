@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Text;
 
 namespace SwgAnh.Docker.Infrastructure.SwgStream
 {
@@ -13,17 +14,88 @@ namespace SwgAnh.Docker.Infrastructure.SwgStream
         {
         }
 
+        public SwgOutputStream(Stream stream, Encoding encoding) : base(stream, encoding)
+        {
+        }
+
         public void SetOpCode(short value)
         {
-            Write(value);
+            WriteShort(value);
             _opCode = value;
         }
 
-        public override void Write(short value)
+        public void SetSequence(short value)
         {
-            Write((value >> 0 ) & 0xFFF);
-            Write((value >> 8 ) & 0xFFF);
-            _written++;
+            if (_written == 2)
+            {
+                var reversedValue = ReverseBytes(value);
+                _sequence = reversedValue;
+                WriteShort(_sequence);
+            }
+            else
+            {
+                throw new System.Exception("Sequence must be set right after OPCode");
+            };
+        }
+
+        private short ReverseBytes(short i)
+        {
+            return (short)((i << 8) + (i >> 8));
+        }
+        public void WriteByte(int v)
+        {
+            Write(v);
+            _written += 1;
+        }
+
+        public void WriteShort(short value)
+        {
+            int val1 = (int)((uint)value >> 0) & 0xFFF;
+            int val2 = (int)((uint)value >> 8) & 0xFFF;
+            Write(val1);
+            Write(val2);
+            _written += 2;
+        }
+
+        public void WriteInt(int value)
+        {
+            int val1 = (int)((uint)value >> 0) & 0xFFF;
+            int val2 = (int)((uint)value >> 8) & 0xFFF;
+            int val3 = (int)((uint)value >> 16) & 0xFFF;
+            int val4 = (int)((uint)value >> 24) & 0xFFF;
+
+            Write(val1);
+            Write(val2);
+            Write(val3);
+            Write(val4);
+            _written += 4;
+        }
+
+        public void WriteChar(int value)
+        {
+            int val1 = (int)((uint)value >> 0) & 0xFFF;
+            int val2 = (int)((uint)value >> 8) & 0xFFF;
+
+            Write(val1);
+            Write(val2);
+            _written += 2;
+        }
+
+        public void WriteUtf(string str)
+        {
+            if (str == null)
+            {
+                WriteShort(0);
+            }
+            else
+            {
+                int strLen = str.Length;
+                WriteInt(strLen);
+                for (int i = 0; i < str.Length; i++)
+                {
+                    WriteChar(str[i]);
+                }
+            }
         }
     }
 }

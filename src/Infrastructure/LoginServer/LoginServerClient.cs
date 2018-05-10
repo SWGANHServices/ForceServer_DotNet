@@ -22,7 +22,7 @@ namespace SwgAnh.Docker.Infrastructure
         public delegate void ThresholdReachedEventHandler(object sender,
             BytesRecivedEventArgs e);
         private readonly UdpClient Client = new UdpClient(LoginServerPort);
-        private IPEndPoint Server = new IPEndPoint(IPAddress.Any, 44454);
+        private IPEndPoint Server = new IPEndPoint(IPAddress.Any, LoginServerPort);
         private LoginEventHandler eventHandler = new LoginEventHandler();
         private volatile bool IsRunning;
         private readonly ISessionRecivedHandler _sessionRecivedHandler;
