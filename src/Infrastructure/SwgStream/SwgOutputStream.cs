@@ -10,6 +10,11 @@ namespace SwgAnh.Docker.Infrastructure.SwgStream
         private short _sequence;
         private short _updateType;
 
+        public SwgOutputStream()
+        {
+
+        }
+
         public SwgOutputStream(Stream stream) : base(stream)
         {
         }
@@ -37,14 +42,18 @@ namespace SwgAnh.Docker.Infrastructure.SwgStream
                 throw new System.Exception("Sequence must be set right after OPCode");
             };
         }
-
-        private short ReverseBytes(short i)
+        public void WriteByteReversed(short value)
+        {
+            var val = ReverseBytes(value);
+            WriteShort(val);
+        }
+        public short ReverseBytes(short i)
         {
             return (short)((i << 8) + (i >> 8));
         }
         public void WriteByte(int v)
         {
-            Write(v);
+            Write((byte)v);
             _written += 1;
         }
 
@@ -52,8 +61,8 @@ namespace SwgAnh.Docker.Infrastructure.SwgStream
         {
             int val1 = (int)((uint)value >> 0) & 0xFFF;
             int val2 = (int)((uint)value >> 8) & 0xFFF;
-            Write(val1);
-            Write(val2);
+            Write((byte)val1);
+            Write((byte)val2);
             _written += 2;
         }
 
@@ -64,10 +73,10 @@ namespace SwgAnh.Docker.Infrastructure.SwgStream
             int val3 = (int)((uint)value >> 16) & 0xFFF;
             int val4 = (int)((uint)value >> 24) & 0xFFF;
 
-            Write(val1);
-            Write(val2);
-            Write(val3);
-            Write(val4);
+            Write((byte)val1);
+            Write((byte)val2);
+            Write((byte)val3);
+            Write((byte)val4);
             _written += 4;
         }
 
@@ -76,8 +85,8 @@ namespace SwgAnh.Docker.Infrastructure.SwgStream
             int val1 = (int)((uint)value >> 0) & 0xFFF;
             int val2 = (int)((uint)value >> 8) & 0xFFF;
 
-            Write(val1);
-            Write(val2);
+            Write((byte)val1);
+            Write((byte)val2);
             _written += 2;
         }
 

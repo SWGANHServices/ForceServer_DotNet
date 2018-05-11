@@ -29,10 +29,9 @@ namespace SwgAnh.Docker.Infrastructure.LoginServer
             var encoding = Encoding.UTF8;
             using (var stream = new MemoryStream())
             {
-                var formatter = new BinaryFormatter();
-                formatter.Serialize(stream, sessionRecived);
-
-                using (var output = new SwgOutputStream(stream, encoding))
+                //var formatter = new BinaryFormatter();
+                //formatter.Serialize(stream, sessionRecived);
+                using (var output = new SwgOutputStream(stream))
                 {
                     output.WriteShort((short)SoeOpCodes.SoeChlDataA);
                     output.WriteShort(0);
@@ -46,13 +45,13 @@ namespace SwgAnh.Docker.Infrastructure.LoginServer
 
             using (var stream = new MemoryStream())
             {
-                var formatter = new BinaryFormatter();
-                formatter.Serialize(stream, sessionRecived);
+                //var formatter = new BinaryFormatter();
+                //formatter.Serialize(stream, sessionRecived);
 
                 using (var output = new SwgOutputStream(stream))
                 {
-                    output.WriteShort((short)SoeOpCodes.SoeChlDataA);
-                    output.WriteShort(0);
+                    output.SetOpCode((short)SoeOpCodes.SoeChlDataA);
+                    output.SetSequence(0);
                     output.WriteShort((short)SoeOpCodes.WORLD_UPDATE);
                     output.WriteInt(Constants.Constants.LoginServer.LoginServerID);
                     output.WriteInt(29411);
@@ -66,20 +65,21 @@ namespace SwgAnh.Docker.Infrastructure.LoginServer
         {
             using (var stream = new MemoryStream())
             {
-                var formatter = new BinaryFormatter();
-                formatter.Serialize(stream, sessionRecived);
+                //var formatter = new BinaryFormatter();
+                //formatter.Serialize(stream, sessionRecived);
 
                 using (var output = new SwgOutputStream(stream))
                 {
-                    output.WriteShort((short)SoeOpCodes.SoeSessionResponse);
+                    output.SetOpCode((short)SoeOpCodes.SoeSessionResponse);
                     output.WriteInt(sessionRecived.ClientId);
-                    output.WriteShort(sessionRecived.CsrSeed);
+                    output.ReverseBytes(sessionRecived.CsrSeed);
                     output.WriteByte(2);
                     output.WriteByte(1);
                     output.WriteByte(4);
                     output.WriteInt(Constants.Constants.LoginServer.MaxPacketSize);
                     stream.Position = 0;
-                    queueList.Enqueue(stream.ToArray());
+                    var byterray = stream.ToArray();
+                    queueList.Enqueue(byterray);
                 }
             }
         }
