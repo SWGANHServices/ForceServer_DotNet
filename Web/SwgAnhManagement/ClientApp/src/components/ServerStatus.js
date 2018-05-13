@@ -1,4 +1,4 @@
-﻿import React, { Component } from 'react'
+﻿import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
@@ -14,8 +14,7 @@ class ServerStatus extends Component {
         return (
             <div>
                 <section className="serverstatus">
-                    <div className={this.props.status === 'Online' ? "serverstatus__status alert alert-success"
-                        : "serverstatus__status alert alert-danger"} role="alert">
+                    <div className={this.props.status === 'Online' ? "serverstatus__status alert alert-success": "serverstatus__status alert alert-danger"} role="alert">
                         <p>Server Status {this.props.status}</p>
                     </div>
                 </section>

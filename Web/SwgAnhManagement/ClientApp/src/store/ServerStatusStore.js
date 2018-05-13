@@ -1,13 +1,13 @@
 ﻿const requestServerStatusType = 'REQUEST_SERVER_STATUS';
 const reciveServerStatusType = 'RECIVE_SERVER_STATUS';
-const initalState = { isLoading: false, status: 'Offline', color: 'danger'}
+const initalState = { isLoading: false, status: 'Offline', color: 'danger' };
 
 // Fetch data
 export const actionCreators = {
-    requestServerStatus : () => async (dispatch, getState) => {
+    requestServerStatus: () => async (dispatch, getState) => {
         dispatch({ type: requestServerStatusType });
     }
-}
+};
 
 // Set states etc
 export const reducer = (state, action) => {
@@ -19,4 +19,4 @@ export const reducer = (state, action) => {
         };
     }
     return state;
-}
+};
