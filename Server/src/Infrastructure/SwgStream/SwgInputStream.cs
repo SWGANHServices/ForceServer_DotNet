@@ -1,10 +1,8 @@
-using System;
-using System.Collections.Concurrent;
 using System.IO;
-using System.Net.Sockets;
 using SwgAnh.Docker.Infrastructure.Packets;
 
-namespace SwgAnh.Docker.Infrastructure.SwgStream {
+namespace SwgAnh.Docker.Infrastructure.SwgStream
+{
     public class SwgInputStream : BinaryReader {
         private readonly Stream _stream;
         
@@ -33,8 +31,6 @@ namespace SwgAnh.Docker.Infrastructure.SwgStream {
                 Sequence = -1;
             }
         }
-
-        
 
         private short ReverseBytes () {
             var i = ReadInt16();

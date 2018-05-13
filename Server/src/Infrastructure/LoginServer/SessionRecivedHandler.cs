@@ -29,8 +29,6 @@ namespace SwgAnh.Docker.Infrastructure.LoginServer
             var encoding = Encoding.UTF8;
             using (var stream = new MemoryStream())
             {
-                //var formatter = new BinaryFormatter();
-                //formatter.Serialize(stream, sessionRecived);
                 using (var output = new SwgOutputStream(stream))
                 {
                     output.WriteShort((short)SoeOpCodes.SoeChlDataA);
@@ -45,9 +43,6 @@ namespace SwgAnh.Docker.Infrastructure.LoginServer
 
             using (var stream = new MemoryStream())
             {
-                //var formatter = new BinaryFormatter();
-                //formatter.Serialize(stream, sessionRecived);
-
                 using (var output = new SwgOutputStream(stream))
                 {
                     output.SetOpCode((short)SoeOpCodes.SoeChlDataA);
@@ -65,18 +60,15 @@ namespace SwgAnh.Docker.Infrastructure.LoginServer
         {
             using (var stream = new MemoryStream())
             {
-                //var formatter = new BinaryFormatter();
-                //formatter.Serialize(stream, sessionRecived);
-
                 using (var output = new SwgOutputStream(stream))
                 {
-                    output.SetOpCode((short)SoeOpCodes.SoeSessionResponse);
-                    output.WriteInt(sessionRecived.ClientId);
-                    output.ReverseBytes(sessionRecived.CsrSeed);
-                    output.WriteByte(2);
-                    output.WriteByte(1);
-                    output.WriteByte(4);
-                    output.WriteInt(Constants.Constants.LoginServer.MaxPacketSize);
+                    output.SetOpCode((short)SoeOpCodes.SoeSessionResponse); // OPCode
+                    output.WriteInt(sessionRecived.ClientId); // Client Id
+                    output.ReverseBytes(sessionRecived.CsrSeed); // CsrSeed
+                    output.WriteByte(2); // CsrLength
+                    output.WriteByte(1); // Use compression
+                    output.WriteByte(4); // SeedSize
+                    output.WriteInt(Constants.Constants.LoginServer.MaxPacketSize); // Server UDP Size
                     stream.Position = 0;
                     var byterray = stream.ToArray();
                     queueList.Enqueue(byterray);
