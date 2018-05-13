@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import ServerStatus from './ServerStatus'
 const Home = props => (
     <div>
-        <h1>Hello, world!</h1>
+        <h1>SwgAnh Server Management</h1>
         <ServerStatus />
     </div>
 );
