@@ -9,18 +9,25 @@ using SwgAnh.Docker.Infrastructure.LoginServer;
 using SwgAnh.Docker.Infrastructure.Packets;
 using SwgAnh.Docker.Infrastructure.SwgStream;
 
-namespace SwgAnh.Docker.Infrastructure {
-    public class LoginServerClient : ILoginServer {
-        private LoginEventHandler eventHandler = new LoginEventHandler ();
+namespace SwgAnh.Docker.Infrastructure
+{
+    public class LoginServerClient : ILoginServer
+    {
+        public delegate void PacketsRecivedEventHandler(object sender, BytesRecivedEventArgs e);
+        private LoginEventHandler eventHandler = new LoginEventHandler();
         private volatile bool IsRunning;
         private readonly ISessionRecivedHandler _sessionRecivedHandler;
         private readonly ISystemMessage _systemMessage;
         private readonly ILogger _logger;
         private readonly IUdpClient _udpClient;
+        private readonly ISoeActionFactory _soeActionFactory;
 
-        public LoginServerClient (ISessionRecivedHandler sessionRecivedHandler,
+        public LoginServerClient(ISessionRecivedHandler sessionRecivedHandler,
             ISystemMessage systemMessage,
-            ILogger logger, IUdpClient udpClient) {
+            ILogger logger, IUdpClient udpClient,
+            ISoeActionFactory soeActionFactory)
+        {
+            _soeActionFactory = soeActionFactory;
             _sessionRecivedHandler = sessionRecivedHandler;
             _systemMessage = systemMessage;
             _logger = logger;
@@ -30,67 +37,69 @@ namespace SwgAnh.Docker.Infrastructure {
 
         /// <inheritdoc />
         /// <summary>
-        /// Start Login Server for inncomming UDP packets
+        /// Start Login Server 
         /// </summary>
-        public void StartServer () {
-            try {
+        public void StartServer()
+        {
+            try
+            {
                 IsRunning = true;
                 if (!IsRunning) return;
-                var listeningThread = new Thread (ListenForUdpPackets);
-                listeningThread.Start ();
-                _logger.LogDebug ("Listening for login attemps...");
-            } catch (ThreadStateException e) {
-                _logger.LogError ($"Thread failed with error: {e}");
-            } catch (OutOfMemoryException e) {
-                _logger.LogError ($"Server is out of memory. can't start thread with error: {e}");
-            } catch (Exception e) {
-                _logger.LogError ($"Starting login server failed with unkown error: {e}");
+                var listeningThread = new Thread(ListenForUdpPackets);
+                listeningThread.Start();
+                _logger.LogDebug("Listening for login attemps...");
+            }
+            catch (ThreadStateException e)
+            {
+                _logger.LogError($"Thread failed with error: {e}");
+            }
+            catch (OutOfMemoryException e)
+            {
+                _logger.LogError($"Server is out of memory. can't start thread with error: {e}");
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Starting login server failed with unkown error: {e}");
             }
         }
 
-        private void ListenForUdpPackets () {
-            while (IsRunning) {
-                var bytes = _udpClient.Receive ();
-                eventHandler.Login (bytes);
+        private void ListenForUdpPackets()
+        {
+            while (IsRunning)
+            {
+                var bytes = _udpClient.Receive();
+                eventHandler.Login(bytes);
             }
         }
 
-        
-        protected virtual void TryHandleInncommingPacket (object sender, BytesRecivedEventArgs e) {
-            if (e.RecivedBytes == null) {
+        protected virtual void TryHandleInncommingPacket(object sender, BytesRecivedEventArgs e)
+        {
+            if (e.RecivedBytes == null)
+            {
                 return;
             }
-            try {
-                using (var memStream = new MemoryStream (e.RecivedBytes)) {
-                    var swgStream = new SwgInputStream (memStream);
-                    switch (swgStream.OpCode) {
-                        case (short) SoeOpCodes.Ping:
-                            _logger.LogDebug ("Ping recived.");
-                            break;
-                        case (short) SoeOpCodes.SoeSessionRequest:
-                            _logger.LogDebug ($"{nameof(SoeOpCodes.SoeSessionRequest)} recived");
-                            var result = _sessionRecivedHandler.HandleSessionRecived (swgStream);
-                            break;
-                        case (short) SoeOpCodes.SoeChlDataA:
-                            break;
-                        default:
-                            _logger.LogDebug ("Uknown OPCode recived");
-                            break;
-                    }
+            try
+            {
+                using (var memStream = new MemoryStream(e.RecivedBytes))
+                {
+                    var swgStream = new SwgInputStream(memStream);
+                    _soeActionFactory.InitiateAction(swgStream);
                 }
-            } catch (Exception exception) {
-                _logger.LogError ($"Could not handle inncomming packet: {exception}");
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError($"Could not handle inncomming packet: {exception}");
             }
         }
-
 
         /// <summary>
         /// Stops the server and threads for Login
         /// </summary>
-        public void CloseServer () {
+        public void CloseServer()
+        {
             IsRunning = false;
             eventHandler.UdpPacketsRecived -= TryHandleInncommingPacket;
-            _udpClient.Close ();
+            _udpClient.Close();
         }
 
     }

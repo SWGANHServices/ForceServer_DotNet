@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Server;
 using Server.src.Contracts;
+using Server.src.Infrastructure;
 using SwgAnh.Docker.Contracts;
 using SwgAnh.Docker.Infrastructure;
 using SwgAnh.Docker.Infrastructure.Logger;
@@ -31,6 +32,8 @@ namespace SwgAnh.Docker
                 .AddSingleton<ILogger, ConsoleLogger>()
                 .AddTransient<ISessionRecivedHandler, SessionRecivedHandler>()
                 .AddSingleton<IUdpClient, UdpClient>()
+                .AddTransient<ISystemMessage, SystemMessage>()
+                .AddTransient<ISoeActionFactory, SoeActionFactory>()
                 .BuildServiceProvider();
             return serviceProvider;
         }

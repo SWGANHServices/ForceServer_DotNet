@@ -5,7 +5,7 @@ namespace SwgAnh.Docker.Infrastructure.LoginServer
 {
     public class LoginEventHandler
     {
-        public event ThresholdReachedEventHandler UdpPacketsRecived;
+        public event PacketsRecivedEventHandler UdpPacketsRecived;
         
         public void Login(byte[] bytes)
         {
