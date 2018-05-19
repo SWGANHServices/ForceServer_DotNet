@@ -75,9 +75,7 @@ namespace SwgAnh.Docker.Infrastructure
         protected virtual void TryHandleInncommingPacket(object sender, BytesRecivedEventArgs e)
         {
             if (e.RecivedBytes == null)
-            {
                 return;
-            }
             try
             {
                 using (var memStream = new MemoryStream(e.RecivedBytes))
