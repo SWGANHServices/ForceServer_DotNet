@@ -11,17 +11,26 @@ namespace Server.src.Infrastructure
     {
         private readonly ISessionRecivedHandler _sessionRecivedHandler;
         private readonly IChlDataRecived _chlDataRecived;
+        private readonly INetStatusRequestRecived _netStatusRequestRecived;
         private readonly IDictionary<SoeOpCodes, Action<SwgInputStream>> Operations;
 
-        public SoeActionFactory(ISessionRecivedHandler sessionRecivedHandler, 
-            IChlDataRecived chlDataRecived)
+        public SoeActionFactory(ISessionRecivedHandler sessionRecivedHandler,
+            IChlDataRecived chlDataRecived,
+            INetStatusRequestRecived netStatusRequestRecived)
         {
             _sessionRecivedHandler = sessionRecivedHandler;
             _chlDataRecived = chlDataRecived;
+            _netStatusRequestRecived = netStatusRequestRecived;
             Operations = new Dictionary<SoeOpCodes, Action<SwgInputStream>> {
                 { SoeOpCodes.SoeSessionRequest, HandleSessionRequest },
                 { SoeOpCodes.SoeChlDataA, HandleChannelDataA },
+                { SoeOpCodes.SoeNetStatusReq, HandleNetSatusRequest}
             };
+        }
+
+        private void HandleNetSatusRequest(SwgInputStream stream)
+        {
+            _netStatusRequestRecived.HandleNetStatusRequest(stream);
         }
 
         public void InitiateAction(SwgInputStream stream)

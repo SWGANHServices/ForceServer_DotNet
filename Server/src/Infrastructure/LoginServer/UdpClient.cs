@@ -10,15 +10,15 @@ namespace Server {
         private IPEndPoint Server = new IPEndPoint (IPAddress.Any, LoginServerPort);
 
         public void Close () {
-            this.Client.Close ();
+            Client.Close ();
         }
 
         public byte[] Receive () {
-            return this.Client.Receive (ref Server);
+            return Client.Receive (ref Server);
         }
 
         public void SendAsync (byte[] datagram, int bytes) {
-            this.Client.SendAsync (datagram, bytes, Server);
+            Client.SendAsync (datagram, bytes, Server);
         }
     }
 }

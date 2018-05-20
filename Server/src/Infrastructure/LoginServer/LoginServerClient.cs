@@ -1,19 +1,16 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
-using System.Net;
-using System.Net.Sockets;
 using System.Threading;
 using Server.src.Contracts;
 using SwgAnh.Docker.Contracts;
 using SwgAnh.Docker.Infrastructure.LoginServer;
-using SwgAnh.Docker.Infrastructure.Packets;
 using SwgAnh.Docker.Infrastructure.SwgStream;
 
 namespace SwgAnh.Docker.Infrastructure
 {
     public class LoginServerClient : ILoginServer
     {
-        public delegate void PacketsRecivedEventHandler(object sender, BytesRecivedEventArgs e);
         private LoginEventHandler eventHandler = new LoginEventHandler();
         private volatile bool IsRunning;
         private readonly ISessionRecivedHandler _sessionRecivedHandler;
@@ -83,6 +80,10 @@ namespace SwgAnh.Docker.Infrastructure
                     var swgStream = new SwgInputStream(memStream);
                     _soeActionFactory.InitiateAction(swgStream);
                 }
+            }
+            catch (KeyNotFoundException keyException)
+            {
+                _logger.LogWarning($"Unknown opCode: {keyException.Message}");
             }
             catch (Exception exception)
             {

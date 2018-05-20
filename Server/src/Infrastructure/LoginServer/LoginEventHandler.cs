@@ -1,5 +1,4 @@
-using static SwgAnh.Docker.Infrastructure.LoginServer.LoginEventHandler;
-using static SwgAnh.Docker.Infrastructure.LoginServerClient;
+using static SwgAnh.Docker.src.Infrastructure.Packets.PacketRecivedEvents;
 
 namespace SwgAnh.Docker.Infrastructure.LoginServer
 {

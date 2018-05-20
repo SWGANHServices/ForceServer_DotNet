@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Text;
 
 namespace SwgAnh.Docker.Infrastructure.SwgStream
@@ -42,6 +43,41 @@ namespace SwgAnh.Docker.Infrastructure.SwgStream
                 throw new System.Exception("Sequence must be set right after OPCode");
             };
         }
+
+        public MemoryStream GenerateCrCSeed(byte[] stream, int crcSeed)
+        {
+            short nCrcLength = 2;
+            var length = (short)(stream.Length - nCrcLength);
+            int arrayIndex = (~crcSeed) & 0xFF;
+            uint nCrc = Constants.Constants.LoginServer.CrcTable[arrayIndex];
+            nCrc ^= 0x00FFFFFF;
+            int nIndex = (int)((crcSeed >> 8) ^ nCrc);
+            nCrc = (nCrc >> 8) & 0x00FFFFFF;
+            nCrc ^= Constants.Constants.LoginServer.CrcTable[(nIndex) & 0xFF];
+            nIndex = (int)((crcSeed >> 16) ^ nCrc);
+            nCrc = (nCrc >> 8) & 0x00FFFFFF;
+            nCrc ^= Constants.Constants.LoginServer.CrcTable[(nIndex) & 0xFF];
+            nIndex = (int)((crcSeed >> 24) ^ nCrc);
+            nCrc = (nCrc >> 8) & 0x00FFFFFF;
+            nCrc ^= Constants.Constants.LoginServer.CrcTable[(nIndex) & 0xFF];
+            for (int i = 0; i < length; i++)
+            {
+
+                nIndex = (int)(stream[i] ^ nCrc);
+                nCrc = (nCrc >> 8) & 0x00FFFFFF;
+                nCrc ^= Constants.Constants.LoginServer.CrcTable[nIndex & 0xFF];
+            }
+            var crc = ~nCrc;
+            byte[] newOutput = stream;
+            for (short i = 0; i < nCrcLength; i++)
+            {
+                newOutput[(length - 1) - i] = (byte)((crc >> (8 * i)) & 0xFF);
+            }
+            var newStream = new MemoryStream(newOutput);
+            newStream.Write(newOutput);
+            return newStream;
+        }
+
         public void WriteByteReversed(short value)
         {
             var val = ReverseBytes(value);
