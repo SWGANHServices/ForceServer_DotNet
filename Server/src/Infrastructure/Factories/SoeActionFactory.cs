@@ -5,14 +5,14 @@ using SwgAnh.Docker.Infrastructure.Packets;
 using SwgAnh.Docker.Infrastructure.SwgStream;
 using SwgAnh.Docker.src.Contracts;
 
-namespace Server.src.Infrastructure
+namespace SwgAnh.Docker.Infrastructure.Factories
 {
     public class SoeActionFactory : ISoeActionFactory
     {
         private readonly ISessionRecivedHandler _sessionRecivedHandler;
         private readonly IChlDataRecived _chlDataRecived;
         private readonly INetStatusRequestRecived _netStatusRequestRecived;
-        private readonly IDictionary<SoeOpCodes, Action<SwgInputStream>> Operations;
+        private readonly IDictionary<SoeOpCodes, Action<SwgInputStream>> _operations;
 
         public SoeActionFactory(ISessionRecivedHandler sessionRecivedHandler,
             IChlDataRecived chlDataRecived,
@@ -21,7 +21,7 @@ namespace Server.src.Infrastructure
             _sessionRecivedHandler = sessionRecivedHandler;
             _chlDataRecived = chlDataRecived;
             _netStatusRequestRecived = netStatusRequestRecived;
-            Operations = new Dictionary<SoeOpCodes, Action<SwgInputStream>> {
+            _operations = new Dictionary<SoeOpCodes, Action<SwgInputStream>> {
                 { SoeOpCodes.SoeSessionRequest, HandleSessionRequest },
                 { SoeOpCodes.SoeChlDataA, HandleChannelDataA },
                 { SoeOpCodes.SoeNetStatusReq, HandleNetSatusRequest}
@@ -35,7 +35,7 @@ namespace Server.src.Infrastructure
 
         public void InitiateAction(SwgInputStream stream)
         {
-            Operations[(SoeOpCodes)stream.OpCode].Invoke(stream);
+            _operations[(SoeOpCodes)stream.OpCode].Invoke(stream);
         }
 
         private void HandleChannelDataA(SwgInputStream stream)

@@ -46,8 +46,8 @@ namespace SwgAnh.Docker.Infrastructure.SwgStream
 
         public MemoryStream GenerateCrCSeed(byte[] stream, int crcSeed)
         {
-            short nCrcLength = 2;
-            var length = (short)(stream.Length - nCrcLength);
+            short crcLength = 2;
+            var length = (short)(stream.Length - crcLength);
             int arrayIndex = (~crcSeed) & 0xFF;
             uint nCrc = Constants.Constants.LoginServer.CrcTable[arrayIndex];
             nCrc ^= 0x00FFFFFF;
@@ -69,7 +69,7 @@ namespace SwgAnh.Docker.Infrastructure.SwgStream
             }
             var crc = ~nCrc;
             byte[] newOutput = stream;
-            for (short i = 0; i < nCrcLength; i++)
+            for (short i = 0; i < crcLength; i++)
             {
                 newOutput[(length - 1) - i] = (byte)((crc >> (8 * i)) & 0xFF);
             }

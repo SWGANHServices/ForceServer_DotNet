@@ -1,7 +1,4 @@
-using System.Net;
-using System.Net.Sockets;
-
-namespace Server.src.Contracts
+namespace SwgAnh.Docker.Contracts
 {
     public interface IUdpClient
     {

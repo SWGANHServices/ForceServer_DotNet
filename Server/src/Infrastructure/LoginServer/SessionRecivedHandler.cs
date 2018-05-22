@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using Server.src.Contracts;
-using SwgAnh.Docker.Constants;
 using SwgAnh.Docker.Contracts;
 using SwgAnh.Docker.Infrastructure.Packets;
 using SwgAnh.Docker.Infrastructure.SwgStream;
@@ -29,12 +25,12 @@ namespace SwgAnh.Docker.Infrastructure.LoginServer
             var sessionRecived = new SessionRecived();
             sessionRecived.Deserialize(baseObject);
             QueueServerSessionResponse(queueList, sessionRecived);
-            QueueLoginServerResponse(queueList, sessionRecived);
+            QueueLoginServerResponse(queueList);
             _systemMessage.SendMessage(queueList);
             return queueList;
         }
 
-        private void QueueLoginServerResponse(Queue<byte[]> queueList, SessionRecived sessionRecived)
+        private void QueueLoginServerResponse(Queue<byte[]> queueList)
         {
             var encoding = Encoding.UTF8;
             using (var stream = new MemoryStream())
@@ -66,7 +62,7 @@ namespace SwgAnh.Docker.Infrastructure.LoginServer
             }
         }
 
-        private static void QueueServerSessionResponse(Queue<byte[]> queueList, SessionRecived sessionRecived)
+        private static void QueueServerSessionResponse(Queue<byte[]> queueList, SoeBaseObject sessionRecived)
         {
             using (var stream = new MemoryStream())
             {

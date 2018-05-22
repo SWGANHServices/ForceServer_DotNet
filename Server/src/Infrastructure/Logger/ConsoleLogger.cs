@@ -5,7 +5,7 @@ namespace SwgAnh.Docker.Infrastructure.Logger
 {
     public class ConsoleLogger : ILogger
     {
-        private readonly ConsoleColor DefaultColor = Console.ForegroundColor;
+        private readonly ConsoleColor _defaultColor = Console.ForegroundColor;
         private const string Error = "ERROR:";
         private const string Debug = "DEBUG:";
         private const string Warning = "WARNING:";
@@ -45,7 +45,7 @@ namespace SwgAnh.Docker.Infrastructure.Logger
         
         private void ResetColor() 
         {
-            Console.ForegroundColor = DefaultColor;
+            Console.ForegroundColor = _defaultColor;
         }
     }
 

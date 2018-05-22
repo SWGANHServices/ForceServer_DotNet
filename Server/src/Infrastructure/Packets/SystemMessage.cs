@@ -1,7 +1,8 @@
 using System.Collections.Generic;
 using Server.src.Contracts;
+using SwgAnh.Docker.Contracts;
 
-namespace Server.src.Infrastructure {
+namespace SwgAnh.Docker.Infrastructure.Packets {
     public class SystemMessage : ISystemMessage {
         private readonly IUdpClient _udpClient;
 
@@ -17,7 +18,7 @@ namespace Server.src.Infrastructure {
         public void SendMessage(Queue<byte[]> message)
         {
             var count = message.Count;
-            for (int i = 0; i < count; i++) {
+            for (var i = 0; i < count; i++) {
                 var item = message.Dequeue ();
                 _udpClient.SendAsync (item, item.Length);
             }

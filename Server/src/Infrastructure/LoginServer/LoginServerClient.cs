@@ -4,15 +4,14 @@ using System.IO;
 using System.Threading;
 using Server.src.Contracts;
 using SwgAnh.Docker.Contracts;
-using SwgAnh.Docker.Infrastructure.LoginServer;
 using SwgAnh.Docker.Infrastructure.SwgStream;
 
-namespace SwgAnh.Docker.Infrastructure
+namespace SwgAnh.Docker.Infrastructure.LoginServer
 {
     public class LoginServerClient : ILoginServer
     {
-        private LoginEventHandler eventHandler = new LoginEventHandler();
-        private volatile bool IsRunning;
+        private readonly LoginEventHandler _eventHandler = new LoginEventHandler();
+        private volatile bool _isRunning;
         private readonly ISessionRecivedHandler _sessionRecivedHandler;
         private readonly ISystemMessage _systemMessage;
         private readonly ILogger _logger;
@@ -29,7 +28,7 @@ namespace SwgAnh.Docker.Infrastructure
             _systemMessage = systemMessage;
             _logger = logger;
             _udpClient = udpClient;
-            eventHandler.UdpPacketsRecived += TryHandleInncommingPacket;
+            _eventHandler.UdpPacketsRecived += TryHandleInncommingPacket;
         }
 
         /// <inheritdoc />
@@ -40,8 +39,8 @@ namespace SwgAnh.Docker.Infrastructure
         {
             try
             {
-                IsRunning = true;
-                if (!IsRunning) return;
+                _isRunning = true;
+                if (!_isRunning) return;
                 var listeningThread = new Thread(ListenForUdpPackets);
                 listeningThread.Start();
                 _logger.LogDebug("Listening for login attemps...");
@@ -62,14 +61,14 @@ namespace SwgAnh.Docker.Infrastructure
 
         private void ListenForUdpPackets()
         {
-            while (IsRunning)
+            while (_isRunning)
             {
                 var bytes = _udpClient.Receive();
-                eventHandler.Login(bytes);
+                _eventHandler.Login(bytes);
             }
         }
 
-        protected virtual void TryHandleInncommingPacket(object sender, BytesRecivedEventArgs e)
+        protected virtual void TryHandleInncommingPacket(object sender, LoginServerEventsArgs e)
         {
             if (e.RecivedBytes == null)
                 return;
@@ -96,8 +95,8 @@ namespace SwgAnh.Docker.Infrastructure
         /// </summary>
         public void CloseServer()
         {
-            IsRunning = false;
-            eventHandler.UdpPacketsRecived -= TryHandleInncommingPacket;
+            _isRunning = false;
+            _eventHandler.UdpPacketsRecived -= TryHandleInncommingPacket;
             _udpClient.Close();
         }
 

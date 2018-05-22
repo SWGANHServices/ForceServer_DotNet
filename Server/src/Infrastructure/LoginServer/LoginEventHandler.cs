@@ -1,4 +1,4 @@
-using static SwgAnh.Docker.src.Infrastructure.Packets.PacketRecivedEvents;
+using static SwgAnh.Docker.Infrastructure.Packets.PacketRecivedEvents;
 
 namespace SwgAnh.Docker.Infrastructure.LoginServer
 {
@@ -8,7 +8,7 @@ namespace SwgAnh.Docker.Infrastructure.LoginServer
         
         public void Login(byte[] bytes)
         {
-            var eventArgs = new BytesRecivedEventArgs 
+            var eventArgs = new LoginServerEventsArgs 
             {
                 RecivedBytes = bytes
             };
@@ -16,7 +16,7 @@ namespace SwgAnh.Docker.Infrastructure.LoginServer
         }
 
 
-        protected virtual void OnUdpPacketsRecived(BytesRecivedEventArgs e) {
+        protected virtual void OnUdpPacketsRecived(LoginServerEventsArgs e) {
             UdpPacketsRecived?.Invoke(this, e);
         }
     }
