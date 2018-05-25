@@ -9,7 +9,6 @@ using SwgAnh.Docker.Infrastructure.LoginServer;
 using SwgAnh.Docker.Infrastructure.Packets;
 using SwgAnh.Docker.Infrastructure.SwgAnhServer;
 using SwgAnh.Docker.src.Contracts;
-using SwgAnh.Docker.src.Infrastructure.LoginServer;
 
 namespace SwgAnh.Docker
 {
@@ -38,6 +37,7 @@ namespace SwgAnh.Docker
                 .AddTransient<ISystemMessage, SystemMessage>()
                 .AddTransient<ISoeActionFactory, SoeActionFactory>()
                 .AddTransient<IChlDataRecived, ChlDataRecived>()
+                .AddTransient<INetStatusRequestRecived, NetStatusRequestRecived>()
                 .BuildServiceProvider();
             return serviceProvider;
         }

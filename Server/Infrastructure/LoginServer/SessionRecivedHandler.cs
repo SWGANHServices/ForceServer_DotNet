@@ -39,7 +39,7 @@ namespace SwgAnh.Docker.Infrastructure.LoginServer
                 {
                     output.WriteShort((short)SoeOpCodes.SoeChlDataA);
                     output.WriteShort(0);
-                    output.WriteShort((short)SoeOpCodes.WORLD_UPDATE);
+                    output.WriteShort((short)SoeOpCodes.WorldUpdate);
                     output.WriteInt(Constants.Constants.LoginServer.LoginServerString);
                     output.WriteUtf(Constants.Constants.LoginServer.LoginServerInfo);
                     stream.Position = 0;
@@ -53,7 +53,7 @@ namespace SwgAnh.Docker.Infrastructure.LoginServer
                 {
                     output.SetOpCode((short)SoeOpCodes.SoeChlDataA);
                     output.SetSequence(0);
-                    output.WriteShort((short)SoeOpCodes.WORLD_UPDATE);
+                    output.WriteShort((short)SoeOpCodes.WorldUpdate);
                     output.WriteInt(Constants.Constants.LoginServer.LoginServerID);
                     output.WriteInt(29411);
                     stream.Position = 0;

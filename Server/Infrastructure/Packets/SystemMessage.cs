@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading;
 using Server.src.Contracts;
 using SwgAnh.Docker.Contracts;
 
@@ -21,6 +22,7 @@ namespace SwgAnh.Docker.Infrastructure.Packets {
             for (var i = 0; i < count; i++) {
                 var item = message.Dequeue ();
                 _udpClient.SendAsync (item, item.Length);
+                Thread.Sleep(500); // See if this helps with crash
             }
         }
     }

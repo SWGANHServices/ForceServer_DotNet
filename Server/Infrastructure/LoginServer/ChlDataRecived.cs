@@ -1,12 +1,11 @@
-﻿using Server.src.Contracts;
+﻿using System.Collections.Generic;
+using System.IO;
+using Server.src.Contracts;
 using SwgAnh.Docker.Infrastructure.Packets;
 using SwgAnh.Docker.Infrastructure.SwgStream;
 using SwgAnh.Docker.src.Contracts;
-using System;
-using System.Collections.Generic;
-using System.IO;
 
-namespace SwgAnh.Docker.src.Infrastructure.LoginServer
+namespace SwgAnh.Docker.Infrastructure.LoginServer
 {
     public class ChlDataRecived : IChlDataRecived
     {
@@ -19,7 +18,8 @@ namespace SwgAnh.Docker.src.Infrastructure.LoginServer
         public Queue<byte[]> IChlDataARecived(SwgInputStream inputStream)
         {
             GenerateAck(inputStream.Sequence);
-            throw new NotImplementedException();
+            return new Queue<byte[]>();
+            //throw new NotImplementedException();
         }
         
 

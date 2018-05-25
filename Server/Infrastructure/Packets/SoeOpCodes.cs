@@ -4,9 +4,10 @@
     {
         SoeSessionRequest = 0x0100,
         SoeSessionResponse = 0x0200,
+        Disconnect = 0x0500,
         Ping = 0x0600,
         SoeNetStatusReq = 0x0700,
-        
+        SoeNetStatusRes = 0x0800,
         SoeDataFragB = 0x0E00,
         SoeDataFragC = 0x0F00,
         SoeDataFragD = 0x1000,
@@ -28,8 +29,9 @@
         SoeChlDataA = 0x0900,
 
         // WORLD
-        WORLD_UPDATE = 0x0002,
+        WorldUpdate = 0x0002,
 
 
+        
     }
 }
