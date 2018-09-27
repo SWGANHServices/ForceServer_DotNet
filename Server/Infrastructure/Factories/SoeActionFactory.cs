@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using SwgAnh.Docker.Contracts;
 using SwgAnh.Docker.Infrastructure.Packets;
 using SwgAnh.Docker.Infrastructure.SwgStream;
-using SwgAnh.Docker.src.Contracts;
 
 namespace SwgAnh.Docker.Infrastructure.Factories
 {
+    /// <summary>
+    /// SoeActionFactory handles all inncoming bytes, and distribute them to the different modules based on OPCode
+    /// </summary>
     public class SoeActionFactory : ISoeActionFactory
     {
         private readonly ISessionRecivedHandler _sessionRecivedHandler;
@@ -40,7 +42,7 @@ namespace SwgAnh.Docker.Infrastructure.Factories
 
         private void HandleChannelDataA(SwgInputStream stream)
         {
-            _chlDataRecived.IChlDataARecived(stream);
+            _chlDataRecived.ChlDataARecived(stream);
         }
 
         private void HandleSessionRequest(SwgInputStream stream)

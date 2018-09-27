@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Server.src.Contracts {
+namespace SwgAnh.Docker.Contracts {
     public interface ISystemMessage {
 
         void SendMessage(byte[] message);

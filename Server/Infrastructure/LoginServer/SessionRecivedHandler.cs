@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using Server.src.Contracts;
+using SwgAnh.Docker.Constant;
 using SwgAnh.Docker.Contracts;
 using SwgAnh.Docker.Infrastructure.Packets;
+using SwgAnh.Docker.Infrastructure.Packets.Formatter;
 using SwgAnh.Docker.Infrastructure.SwgStream;
 using SwgAnh.Docker.Models;
 
@@ -13,35 +14,39 @@ namespace SwgAnh.Docker.Infrastructure.LoginServer
     {
 
         private readonly ISystemMessage _systemMessage;
+        private readonly ILogger _logger;
 
-        public SessionRecivedHandler(ISystemMessage systemMessage)
+        public SessionRecivedHandler(ISystemMessage systemMessage, ILogger logger)
         {
             _systemMessage = systemMessage;
+            _logger = logger;
         }
 
         public Queue<byte[]> HandleSessionRecived(SwgInputStream baseObject)
         {
+            _logger.Log($"HandleSessionRecived: Session Recived: {baseObject.OpCode}");
             var queueList = new Queue<byte[]>();
-            var sessionRecived = new SessionRecived();
-            sessionRecived.Deserialize(baseObject);
-            QueueServerSessionResponse(queueList, sessionRecived);
+            var formatter = new SessionRequestFormatter();
+            var sessionRequest = (SessionRequest) formatter.Deserialize(baseObject.BaseStream);
+            QueueServerSessionResponse(queueList, sessionRequest);
             QueueLoginServerResponse(queueList);
             _systemMessage.SendMessage(queueList);
+            _logger.Log($"HandleSessionRecived: Session Done {baseObject.OpCode}");
+            _logger.LogDebug($"HandleSessionRecived: Stream data -> {baseObject.BaseStream}");
             return queueList;
         }
 
         private void QueueLoginServerResponse(Queue<byte[]> queueList)
         {
-            var encoding = Encoding.UTF8;
             using (var stream = new MemoryStream())
             {
                 using (var output = new SwgOutputStream(stream))
                 {
                     output.WriteShort((short)SoeOpCodes.SoeChlDataA);
                     output.WriteShort(0);
-                    output.WriteShort((short)SoeOpCodes.WorldUpdate);
-                    output.WriteInt(Constants.Constants.LoginServer.LoginServerString);
-                    output.WriteUtf(Constants.Constants.LoginServer.LoginServerInfo);
+                    output.WriteShort((short)UpdateCodes.WorldUpdate);
+                    output.WriteInt(Constants.LoginServer.LoginServerString);
+                    output.WriteUtf(Constants.LoginServer.LoginServerInfo);
                     stream.Position = 0;
                     queueList.Enqueue(stream.ToArray());
                 }
@@ -53,8 +58,8 @@ namespace SwgAnh.Docker.Infrastructure.LoginServer
                 {
                     output.SetOpCode((short)SoeOpCodes.SoeChlDataA);
                     output.SetSequence(0);
-                    output.WriteShort((short)SoeOpCodes.WorldUpdate);
-                    output.WriteInt(Constants.Constants.LoginServer.LoginServerID);
+                    output.WriteShort((short)UpdateCodes.WorldUpdate);
+                    output.WriteInt(Constants.LoginServer.LoginServerId);
                     output.WriteInt(29411);
                     stream.Position = 0;
                     queueList.Enqueue(stream.ToArray());
@@ -74,7 +79,7 @@ namespace SwgAnh.Docker.Infrastructure.LoginServer
                     output.WriteByte(2); // CsrLength
                     output.WriteByte(1); // Use compression
                     output.WriteByte(4); // SeedSize
-                    output.WriteInt(Constants.Constants.LoginServer.MaxPacketSize); // Server UDP Size
+                    output.WriteInt(Constants.LoginServer.MaxPacketSize); // Server UDP Size
                     stream.Position = 0;
                     var byterray = stream.ToArray();
                     queueList.Enqueue(byterray);

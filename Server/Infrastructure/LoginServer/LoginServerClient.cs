@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
-using Server.src.Contracts;
 using SwgAnh.Docker.Contracts;
 using SwgAnh.Docker.Infrastructure.SwgStream;
 
@@ -12,20 +11,14 @@ namespace SwgAnh.Docker.Infrastructure.LoginServer
     {
         private readonly LoginEventHandler _eventHandler = new LoginEventHandler();
         private volatile bool _isRunning;
-        private readonly ISessionRecivedHandler _sessionRecivedHandler;
-        private readonly ISystemMessage _systemMessage;
         private readonly ILogger _logger;
         private readonly IUdpClient _udpClient;
         private readonly ISoeActionFactory _soeActionFactory;
 
-        public LoginServerClient(ISessionRecivedHandler sessionRecivedHandler,
-            ISystemMessage systemMessage,
-            ILogger logger, IUdpClient udpClient,
+        public LoginServerClient(ILogger logger, IUdpClient udpClient,
             ISoeActionFactory soeActionFactory)
         {
             _soeActionFactory = soeActionFactory;
-            _sessionRecivedHandler = sessionRecivedHandler;
-            _systemMessage = systemMessage;
             _logger = logger;
             _udpClient = udpClient;
             _eventHandler.UdpPacketsRecived += TryHandleInncommingPacket;

@@ -1,12 +1,10 @@
-﻿using SwgAnh.Docker.Infrastructure.SwgStream;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
+using SwgAnh.Docker.Infrastructure.SwgStream;
 
-namespace SwgAnh.Docker.src.Contracts
+namespace SwgAnh.Docker.Contracts
 {
     public interface IChlDataRecived
     {
-        Queue<byte[]> IChlDataARecived(SwgInputStream inputStream);
+        void ChlDataARecived(SwgInputStream inputStream);
     }
 }

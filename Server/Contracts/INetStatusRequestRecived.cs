@@ -1,9 +1,6 @@
 ﻿using SwgAnh.Docker.Infrastructure.SwgStream;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace SwgAnh.Docker.src.Contracts
+namespace SwgAnh.Docker.Contracts
 {
     public interface INetStatusRequestRecived
     {

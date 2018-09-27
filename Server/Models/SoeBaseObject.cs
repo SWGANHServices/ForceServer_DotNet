@@ -1,4 +1,7 @@
 ﻿using System;
+using System.IO;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 using SwgAnh.Docker.Infrastructure.SwgStream;
 
 namespace SwgAnh.Docker.Models
@@ -10,7 +13,6 @@ namespace SwgAnh.Docker.Models
         public short OpCode { get; set; }
         public short CsrSeed { get; set; }
         public int MaxPacketSize { get; set; }
-
-        public abstract void Deserialize(SwgInputStream inputStream);
+        
     }
 }
