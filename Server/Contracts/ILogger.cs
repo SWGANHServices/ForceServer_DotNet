@@ -1,7 +1,6 @@
-
 namespace SwgAnh.Docker.Contracts
 {
-    public interface ILogger 
+    public interface ILogger
     {
         void Log(string message);
         void LogDebug(string message);

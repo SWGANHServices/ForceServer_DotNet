@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SwgAnh.Docker.Helper
+﻿namespace SwgAnh.Docker.Helper
 {
     public static class GameTimeHelper
     {

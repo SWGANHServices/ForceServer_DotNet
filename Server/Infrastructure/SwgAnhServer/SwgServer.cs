@@ -1,12 +1,11 @@
-﻿using System;
-using SwgAnh.Docker.Contracts;
+﻿using SwgAnh.Docker.Contracts;
 
 namespace SwgAnh.Docker.Infrastructure.SwgAnhServer
 {
     public class SwgServer : ISwgServer
     {
-        private readonly ILoginServer _loginServer;
         private readonly ILogger _logger;
+        private readonly ILoginServer _loginServer;
 
         public SwgServer(ILoginServer loginServer, ILogger logger)
         {
@@ -15,7 +14,7 @@ namespace SwgAnh.Docker.Infrastructure.SwgAnhServer
         }
 
         /// <summary>
-        /// Begin All server components
+        ///     Begin All server components
         /// </summary>
         public void Run()
         {

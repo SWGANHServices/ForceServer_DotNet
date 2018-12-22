@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SwgAnh.Docker.Infrastructure.Packets
+﻿namespace SwgAnh.Docker.Infrastructure.Packets
 {
     public enum UpdateCodes : short
     {

@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using SwgAnh.Docker.Contracts;
-using SwgAnh.Docker.Infrastructure;
 using SwgAnh.Docker.Infrastructure.Factories;
 using SwgAnh.Docker.Infrastructure.Logger;
 using SwgAnh.Docker.Infrastructure.LoginServer;
@@ -9,10 +8,10 @@ using SwgAnh.Docker.Infrastructure.SwgAnhServer;
 
 namespace SwgAnh.Docker
 {
-    static class Program
+    internal static class Program
     {
         /// <summary>
-        /// Setartup for the server
+        ///     Setartup for the server
         /// </summary>
         /// <param name="args">Not in use</param>
         private static void Main(string[] args)
@@ -29,12 +28,12 @@ namespace SwgAnh.Docker
                 .AddTransient<ILoginServer, LoginServerClient>()
                 .AddTransient<ISwgServer, SwgServer>()
                 .AddSingleton<ILogger, ConsoleLogger>()
-                .AddTransient<ISessionRecivedHandler, SessionRecivedHandler>()
+                .AddTransient<ISessionReceivedHandler, SessionReceivedHandler>()
                 .AddSingleton<IUdpClient, UdpClient>()
                 .AddTransient<ISystemMessage, SystemMessage>()
                 .AddTransient<ISoeActionFactory, SoeActionFactory>()
-                .AddTransient<IChlDataRecived, ChlDataRecived>()
-                .AddTransient<INetStatusRequestRecived, NetStatusRequestRecived>()
+                .AddTransient<IChlDataRecived, ChlDataReceived>()
+                .AddTransient<INetStatusRequestRecived, NetStatusRequestReceived>()
                 .BuildServiceProvider();
             return serviceProvider;
         }

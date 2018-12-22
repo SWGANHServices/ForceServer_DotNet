@@ -7,48 +7,49 @@ using SwgAnh.Docker.Infrastructure.SwgStream;
 namespace SwgAnh.Docker.Infrastructure.Factories
 {
     /// <summary>
-    /// SoeActionFactory handles all inncoming bytes, and distribute them to the different modules based on OPCode
+    ///     SoeActionFactory handles all incoming bytes, and distribute them to the different modules based on OPCode
     /// </summary>
     public class SoeActionFactory : ISoeActionFactory
     {
-        private readonly ISessionRecivedHandler _sessionRecivedHandler;
-        private readonly IChlDataRecived _chlDataRecived;
-        private readonly INetStatusRequestRecived _netStatusRequestRecived;
+        private readonly IChlDataRecived _chlDataReceived;
+        private readonly INetStatusRequestRecived _netStatusRequestReceived;
         private readonly IDictionary<SoeOpCodes, Action<SwgInputStream>> _operations;
+        private readonly ISessionReceivedHandler _sessionReceivedHandler;
 
-        public SoeActionFactory(ISessionRecivedHandler sessionRecivedHandler,
-            IChlDataRecived chlDataRecived,
-            INetStatusRequestRecived netStatusRequestRecived)
+        public SoeActionFactory(
+            ISessionReceivedHandler sessionReceivedHandler,
+            IChlDataRecived chlDataReceived,
+            INetStatusRequestRecived netStatusRequestReceived)
         {
-            _sessionRecivedHandler = sessionRecivedHandler;
-            _chlDataRecived = chlDataRecived;
-            _netStatusRequestRecived = netStatusRequestRecived;
-            _operations = new Dictionary<SoeOpCodes, Action<SwgInputStream>> {
-                { SoeOpCodes.SoeSessionRequest, HandleSessionRequest },
-                { SoeOpCodes.SoeChlDataA, HandleChannelDataA },
-                { SoeOpCodes.SoeNetStatusReq, HandleNetSatusRequest}
+            _sessionReceivedHandler = sessionReceivedHandler;
+            _chlDataReceived = chlDataReceived;
+            _netStatusRequestReceived = netStatusRequestReceived;
+            _operations = new Dictionary<SoeOpCodes, Action<SwgInputStream>>
+            {
+                {SoeOpCodes.SoeSessionRequest, HandleSessionRequest},
+                {SoeOpCodes.SoeChlDataA, HandleChannelDataA},
+                {SoeOpCodes.SoeNetStatusReq, HandleNetSatusRequest}
             };
-        }
-
-        private void HandleNetSatusRequest(SwgInputStream stream)
-        {
-            _netStatusRequestRecived.HandleNetStatusRequest(stream);
         }
 
         public void InitiateAction(SwgInputStream stream)
         {
-            _operations[(SoeOpCodes)stream.OpCode].Invoke(stream);
+            _operations[(SoeOpCodes) stream.OpCode].Invoke(stream);
+        }
+
+        private void HandleNetSatusRequest(SwgInputStream stream)
+        {
+            _netStatusRequestReceived.HandleNetStatusRequest(stream);
         }
 
         private void HandleChannelDataA(SwgInputStream stream)
         {
-            _chlDataRecived.ChlDataARecived(stream);
+            _chlDataReceived.ChlDataAReceived(stream);
         }
 
         private void HandleSessionRequest(SwgInputStream stream)
         {
-            _sessionRecivedHandler.HandleSessionRecived(stream);
+            _sessionReceivedHandler.HandleSessionReceived(stream);
         }
-
     }
 }

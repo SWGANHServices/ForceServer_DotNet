@@ -5,7 +5,6 @@ namespace SwgAnh.Docker.Infrastructure.LoginServer
 {
     public class UdpClient : IUdpClient
     {
-
         private const int LoginServerPort = 44453;
         private readonly System.Net.Sockets.UdpClient _client = new System.Net.Sockets.UdpClient(LoginServerPort);
         private IPEndPoint _server = new IPEndPoint(IPAddress.Any, LoginServerPort);
@@ -15,10 +14,7 @@ namespace SwgAnh.Docker.Infrastructure.LoginServer
             _client.Close();
         }
 
-        public byte[] Receive()
-        {
-            return _client.Receive(ref _server);
-        }
+        public byte[] Receive() => _client.Receive(ref _server);
 
         public void SendAsync(byte[] datagram, int bytes)
         {

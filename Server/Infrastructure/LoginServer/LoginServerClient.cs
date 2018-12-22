@@ -7,13 +7,13 @@ using SwgAnh.Docker.Infrastructure.SwgStream;
 
 namespace SwgAnh.Docker.Infrastructure.LoginServer
 {
-    public class LoginServerClient : ILoginServer
+    public sealed class LoginServerClient : ILoginServer
     {
         private readonly LoginEventHandler _eventHandler = new LoginEventHandler();
-        private volatile bool _isRunning;
         private readonly ILogger _logger;
-        private readonly IUdpClient _udpClient;
         private readonly ISoeActionFactory _soeActionFactory;
+        private readonly IUdpClient _udpClient;
+        private volatile bool _isRunning;
 
         public LoginServerClient(ILogger logger, IUdpClient udpClient,
             ISoeActionFactory soeActionFactory)
@@ -21,12 +21,12 @@ namespace SwgAnh.Docker.Infrastructure.LoginServer
             _soeActionFactory = soeActionFactory;
             _logger = logger;
             _udpClient = udpClient;
-            _eventHandler.UdpPacketsRecived += TryHandleInncommingPacket;
+            _eventHandler.UdpPacketsRecived += TryHandleIncomingPacket;
         }
 
         /// <inheritdoc />
         /// <summary>
-        /// Start Login Server 
+        ///     Start Login Server
         /// </summary>
         public void StartServer()
         {
@@ -36,7 +36,7 @@ namespace SwgAnh.Docker.Infrastructure.LoginServer
                 if (!_isRunning) return;
                 var listeningThread = new Thread(ListenForUdpPackets);
                 listeningThread.Start();
-                _logger.LogDebug("Listening for login attemps...");
+                _logger.LogDebug("Listening for login attempt...");
             }
             catch (ThreadStateException e)
             {
@@ -48,8 +48,18 @@ namespace SwgAnh.Docker.Infrastructure.LoginServer
             }
             catch (Exception e)
             {
-                _logger.LogError($"Starting login server failed with unkown error: {e}");
+                _logger.LogError($"Starting login server failed with unknown error: {e}");
             }
+        }
+
+        /// <summary>
+        ///     Stops the server and threads for Login
+        /// </summary>
+        public void CloseServer()
+        {
+            _isRunning = false;
+            _eventHandler.UdpPacketsRecived -= TryHandleIncomingPacket;
+            _udpClient.Close();
         }
 
         private void ListenForUdpPackets()
@@ -61,7 +71,7 @@ namespace SwgAnh.Docker.Infrastructure.LoginServer
             }
         }
 
-        protected virtual void TryHandleInncommingPacket(object sender, LoginServerEventsArgs e)
+        private void TryHandleIncomingPacket(object sender, LoginServerEventsArgs e)
         {
             if (e.RecivedBytes == null)
                 return;
@@ -70,6 +80,7 @@ namespace SwgAnh.Docker.Infrastructure.LoginServer
                 using (var memStream = new MemoryStream(e.RecivedBytes))
                 {
                     var swgStream = new SwgInputStream(memStream);
+
                     _soeActionFactory.InitiateAction(swgStream);
                 }
             }
@@ -79,19 +90,8 @@ namespace SwgAnh.Docker.Infrastructure.LoginServer
             }
             catch (Exception exception)
             {
-                _logger.LogError($"Could not handle inncomming packet: {exception}");
+                _logger.LogError($"Could not handle incoming packet: {exception}");
             }
         }
-
-        /// <summary>
-        /// Stops the server and threads for Login
-        /// </summary>
-        public void CloseServer()
-        {
-            _isRunning = false;
-            _eventHandler.UdpPacketsRecived -= TryHandleInncommingPacket;
-            _udpClient.Close();
-        }
-
     }
 }

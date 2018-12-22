@@ -2,7 +2,7 @@
 {
     public class NetStatusRequest : SoeBaseObject
     {
-        public short ClientTickCount { get; set; }
+        public ushort ClientTickCount { get; set; }
         public int LastUpdate { get; set; }
         public int AvarageUpdate { get; set; }
         public int ShortestUpdate { get; set; }

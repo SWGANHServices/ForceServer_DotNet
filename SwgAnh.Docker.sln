@@ -7,10 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SwgAnh.Docker", "Server\Swg
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Server", "Server", "{FA074EC4-3FC0-4375-9684-522EC5589FE2}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Web", "Web", "{54DDC257-DFF6-4215-B21B-6B8F9AF98335}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SwgAnhManagement", "Web\SwgAnhManagement\SwgAnhManagement.csproj", "{39140D38-C288-4EB8-A6A0-2618377CC94D}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,17 +17,12 @@ Global
 		{23D683A8-D6DE-4055-A675-595B07588CC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{23D683A8-D6DE-4055-A675-595B07588CC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{23D683A8-D6DE-4055-A675-595B07588CC9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{39140D38-C288-4EB8-A6A0-2618377CC94D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{39140D38-C288-4EB8-A6A0-2618377CC94D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{39140D38-C288-4EB8-A6A0-2618377CC94D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{39140D38-C288-4EB8-A6A0-2618377CC94D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{23D683A8-D6DE-4055-A675-595B07588CC9} = {FA074EC4-3FC0-4375-9684-522EC5589FE2}
-		{39140D38-C288-4EB8-A6A0-2618377CC94D} = {54DDC257-DFF6-4215-B21B-6B8F9AF98335}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {11B9727E-C825-40A0-8EB9-E543D79BB2AB}

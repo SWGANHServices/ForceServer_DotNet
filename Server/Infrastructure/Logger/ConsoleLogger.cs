@@ -1,14 +1,14 @@
 using System;
 using SwgAnh.Docker.Contracts;
 
-namespace SwgAnh.Docker.Infrastructure.Logger 
+namespace SwgAnh.Docker.Infrastructure.Logger
 {
     public class ConsoleLogger : ILogger
     {
-        private readonly ConsoleColor _defaultColor = Console.ForegroundColor;
         private const string Error = "ERROR:";
         private const string Debug = "DEBUG:";
         private const string Warning = "WARNING:";
+        private readonly ConsoleColor _defaultColor = Console.ForegroundColor;
 
         public void LogDebug(string message)
         {
@@ -31,22 +31,20 @@ namespace SwgAnh.Docker.Infrastructure.Logger
 
         public void LogWarning(string message)
         {
-            
             SetColor(ConsoleColor.Yellow);
             Console.WriteLine($"{Warning}: {message}");
             ResetColor();
         }
 
-        private static void SetColor(ConsoleColor color) 
+        private static void SetColor(ConsoleColor color)
         {
             Console.ForegroundColor = color;
         }
 
-        
-        private void ResetColor() 
+
+        private void ResetColor()
         {
             Console.ForegroundColor = _defaultColor;
         }
     }
-
 }

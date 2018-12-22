@@ -29,8 +29,6 @@
         SoeChlDataA = 0x0900,
 
         // UpdateCodes TODO: Move out
-        
-
-
+        SoeFatalErr = 0x1D00
     }
 }

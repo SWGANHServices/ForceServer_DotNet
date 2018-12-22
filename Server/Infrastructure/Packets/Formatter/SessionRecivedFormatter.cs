@@ -1,13 +1,12 @@
-﻿using SwgAnh.Docker.Infrastructure.Packets.Reader;
-using SwgAnh.Docker.Models;
-using System;
+﻿using System;
 using System.IO;
+using SwgAnh.Docker.Infrastructure.Packets.Reader;
+using SwgAnh.Docker.Models;
 
 namespace SwgAnh.Docker.Infrastructure.Packets.Formatter
 {
     public class SessionRequestFormatter : SoeFormatterBase
     {
-
         public override object Deserialize(Stream serializationStream)
         {
             var target = new SessionRequest();
@@ -16,12 +15,13 @@ namespace SwgAnh.Docker.Infrastructure.Packets.Formatter
             {
                 target.ClientId = SetClientId();
                 target.OpCode = SetOpCode();
-                target.CRCLength = SetCRCLength();
-                target.ClientUDPSize = SetUDPSize();
+                target.CRCLength = SetCrcLength();
+                target.ClientUDPSize = SetUdpSize();
             }
+
             return target;
         }
-        
+
         // TODO: Serialize back to bytes.
         public override void Serialize(Stream serializationStream, object graph)
         {
@@ -29,7 +29,7 @@ namespace SwgAnh.Docker.Infrastructure.Packets.Formatter
         }
 
 
-        private int SetCRCLength()
+        private int SetCrcLength()
         {
             SoeReader.BaseStream.Position = sizeof(short);
             return SoeReader.ReadInt32();
@@ -40,10 +40,10 @@ namespace SwgAnh.Docker.Infrastructure.Packets.Formatter
             SoeReader.BaseStream.Position = sizeof(int) + sizeof(short);
             return SoeReader.ReadInt32();
         }
-        
-        private int SetUDPSize()
+
+        private int SetUdpSize()
         {
-            SoeReader.BaseStream.Position = sizeof(short) + (sizeof(int) * 2);
+            SoeReader.BaseStream.Position = sizeof(short) + sizeof(int) * 2;
             return SoeReader.ReadInt32();
         }
     }

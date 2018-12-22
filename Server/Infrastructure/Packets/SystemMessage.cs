@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Threading;
 using SwgAnh.Docker.Contracts;
 
 namespace SwgAnh.Docker.Infrastructure.Packets
@@ -8,10 +7,7 @@ namespace SwgAnh.Docker.Infrastructure.Packets
     {
         private readonly IUdpClient _udpClient;
 
-        public SystemMessage(IUdpClient udpClient)
-        {
-            _udpClient = udpClient;
-        }
+        public SystemMessage(IUdpClient udpClient) => _udpClient = udpClient;
 
         public void SendMessage(byte[] message)
         {
@@ -25,7 +21,6 @@ namespace SwgAnh.Docker.Infrastructure.Packets
             {
                 var item = message.Dequeue();
                 _udpClient.SendAsync(item, item.Length);
-                Thread.Sleep(1000); // See if this helps with crash
             }
         }
     }

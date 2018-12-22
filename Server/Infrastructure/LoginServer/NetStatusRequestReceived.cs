@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using SwgAnh.Docker.Contracts;
 using SwgAnh.Docker.Encryption;
@@ -11,12 +10,12 @@ using SwgAnh.Docker.Models;
 
 namespace SwgAnh.Docker.Infrastructure.LoginServer
 {
-    public class NetStatusRequestRecived : INetStatusRequestRecived
+    public class NetStatusRequestReceived : INetStatusRequestRecived
     {
-        private readonly ISystemMessage _systemMessage;
         private readonly ILogger _logger;
+        private readonly ISystemMessage _systemMessage;
 
-        public NetStatusRequestRecived(ISystemMessage systemMessage, ILogger logger)
+        public NetStatusRequestReceived(ISystemMessage systemMessage, ILogger logger)
         {
             _systemMessage = systemMessage;
             _logger = logger;
@@ -24,12 +23,11 @@ namespace SwgAnh.Docker.Infrastructure.LoginServer
 
         public void HandleNetStatusRequest(SwgInputStream stream)
         {
-            
             var message = new Queue<byte[]>();
-            _logger.Log($"HandleNetStatusRequest: NetStatusRequest recived {stream.OpCode}");
+            _logger.Log($"HandleNetStatusRequest: NetStatusRequest received {stream.OpCode}");
 
             var formatter = new NetStatusRequestFormatter();
-            var netStatusRequest = (NetStatusRequest)formatter.Deserialize(stream.BaseStream);
+            var netStatusRequest = (NetStatusRequest) formatter.Deserialize(stream.BaseStream);
 
             GameTimeHelper.ClientTick = netStatusRequest.ClientTickCount;
             GameTimeHelper.ClientPacketSent = netStatusRequest.PacketsSent;
@@ -37,12 +35,11 @@ namespace SwgAnh.Docker.Infrastructure.LoginServer
 
             _logger.Log($"ClientTick = {GameTimeHelper.ClientTick}");
             _logger.Log($"ClientPacketSent = {GameTimeHelper.ClientPacketSent}");
-            _logger.Log($"ClientPacketRecived = {GameTimeHelper.ClientPacketRecived}");
+            _logger.Log($"ClientPacketReceived = {GameTimeHelper.ClientPacketRecived}");
 
             message.Enqueue(GenerateNetStatusRequest());
             _systemMessage.SendMessage(message);
-            _logger.Log($"HandleNetStatusRequest: NetStatusRequest sendt {stream.OpCode}");
-            _logger.LogDebug($"HandleNetStatusRequest: StreamData -> {stream.ToString()}");
+            _logger.Log($"HandleNetStatusRequest: NetStatusRequest sent {stream.OpCode}");
         }
 
         private static byte[] GenerateNetStatusRequest()
@@ -51,17 +48,18 @@ namespace SwgAnh.Docker.Infrastructure.LoginServer
             using (var memoryStream = new MemoryStream())
             using (var outputStream = new SwgOutputStream(memoryStream))
             {
-                outputStream.WriteShort((short) SoeOpCodes.SoeNetStatusRes);
-                outputStream.((short) GameTimeHelper.ClientTick); // Client Tick (TODO: Implement client tick)
-                outputStream.ReverseBytes((short) GameTimeHelper.ServerTick); // Tick Count (TODO: Implement tick count)
-                outputStream.ReverseBytes((short) GameTimeHelper.ClientPacketSent); // ClientPacketsSent (TODO: Implement tick count)
-                outputStream.ReverseBytes((short) GameTimeHelper.ClientPacketRecived); // ClientPacketsReceived (TODO: Implement tick count)
-                outputStream.ReverseBytes((short) GameTimeHelper.ServerPacketSent); // ClientPacketsReceived (TODO: Implement tick count)
-                outputStream.ReverseBytes((short) GameTimeHelper.ServerPacketRecived); // serverPacketsReceivedThisClient (TODO: Implement)
+                outputStream.Write((short) SoeOpCodes.SoeNetStatusRes);
+                outputStream.Write(GameTimeHelper.ClientTick);
+                outputStream.Write(GameTimeHelper.ServerTick);
+                outputStream.Write(GameTimeHelper.ClientPacketSent);
+                outputStream.Write(GameTimeHelper.ClientPacketRecived);
+                outputStream.Write(GameTimeHelper.ServerPacketSent);
+                outputStream.Write(GameTimeHelper.ServerPacketRecived);
                 var buffer = memoryStream.ToArray();
                 var compressed = PacketUtilities.CompressMessage(buffer);
                 var encoded = PacketUtilities.EncryptMessage(compressed, compressed.Length, 0);
-                return encoded;
+                var endStream = PacketUtilities.AppendCrc(encoded, encoded.Length, 0);
+                return (byte[]) endStream;
             }
         }
     }

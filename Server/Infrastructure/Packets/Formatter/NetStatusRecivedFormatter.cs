@@ -1,9 +1,6 @@
-﻿using SwgAnh.Docker.Infrastructure.Packets.Reader;
+﻿using System.IO;
+using SwgAnh.Docker.Infrastructure.Packets.Reader;
 using SwgAnh.Docker.Models;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
 
 namespace SwgAnh.Docker.Infrastructure.Packets.Formatter
 {
@@ -16,34 +13,40 @@ namespace SwgAnh.Docker.Infrastructure.Packets.Formatter
             {
                 target.OpCode = SetOpCode();
                 target.ClientTickCount = SetClientTickCount();
+                target.LastUpdate = SetLastUpdate();
+                target.AvarageUpdate = SetAvarageUpdate();
+                target.ShortestUpdate = SetShortestUpdate();
+                target.LongestUpdate = SetLongestUpdate();
+                target.LastServerUpdate = SetLastServerUpdate();
                 target.PacketsSent = SetPacketsSent();
-                target.PacketsRecived = SetPacketsRecived();
+                target.PacketsRecived = SetPacketsReceived();
             }
+
             return target;
         }
-        
+
+        private int SetLastServerUpdate() => SoeReader.ReadInt32();
+
+        private int SetLongestUpdate() => SoeReader.ReadInt32();
+
+        private int SetShortestUpdate() => SoeReader.ReadInt32();
+
+        private int SetAvarageUpdate() => SoeReader.ReadInt32();
+
+        private int SetLastUpdate() => SoeReader.ReadInt32();
+
         public override void Serialize(Stream serializationStream, object graph)
         {
         }
 
-        private short SetClientTickCount()
+        private ushort SetClientTickCount()
         {
             SoeReader.BaseStream.Position = sizeof(short);
-            return SoeReader.ReadInt16();
+            return SoeReader.ReadUInt16();
         }
 
-        private long SetPacketsSent()
-        {
-            SoeReader.BaseStream.Position = (sizeof(short) * 2) + (sizeof(int) * 5);
-            return SoeReader.ReadInt64();
-        }
+        private long SetPacketsSent() => SoeReader.ReadInt64();
 
-        private long SetPacketsRecived()
-        {
-            SoeReader.BaseStream.Position = (sizeof(short) * 2) + (sizeof(int) * 5) + sizeof(long);
-            return SoeReader.ReadInt64();
-        }
-
-        
+        private long SetPacketsReceived() => SoeReader.ReadInt64();
     }
 }
